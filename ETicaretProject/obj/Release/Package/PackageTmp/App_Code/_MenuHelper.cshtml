@@ -1,0 +1,23 @@
+﻿@helper MenuRecursive(List<ETicaretProject.DB.Categories> cats)
+{
+    //childe bulunan categorimi dropright ile yana doğru açtım yoksa dropmenüme direk ekledim.
+    <div class="dropdown-menu dropright">
+
+        @foreach (var cat in cats)
+        {
+            if (cat.Categories1.Any())
+            {
+
+                <a class=" dropdown-item  dropdown-toggle" data-toggle="dropdown" href="~/i/index/@cat.Id">@cat.Name</a>
+                //MenuRecursive metodumu tekrar çağırdım ve bu sayede categorimin alt categorileri varmı diye control edebildim.
+                @MenuRecursive(cat.Categories1.ToList())
+
+            }
+            else
+            {
+                <a class="dropdown-item " href="~/i/index/@cat.Id">@cat.Name</a>
+            }
+        }
+    </div>
+}
+

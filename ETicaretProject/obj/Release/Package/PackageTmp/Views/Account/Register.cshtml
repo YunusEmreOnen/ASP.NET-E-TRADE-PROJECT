@@ -1,0 +1,71 @@
+﻿@model ETicaretProject.Models.Account.RegisterModels
+@{
+    ViewBag.Title = "Register";
+}
+
+<div class="row my-5">
+    <div class="col-md-6 offset-md-3">
+        @*Sayfamı bir BeginForm içerisine almak get ve post işlemlerimi yapmamı sağladı.*@
+        @using (Html.BeginForm())
+        {
+            <div class="card card-default shadow crd text-white">
+                <!-- card-header -->
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h3><span class="fa fa-user-plus fa-2x"></span></h3>
+                        </div>
+                        <div class="col-md-9 text-right">
+                            <h2>Kayıt Ol</h2>
+                            @*viewbag.ReError null yada içerisinde boş bir değer içermiyorsa ViewBag.ReErroru bas yoksa else içerisindeki html kodum çalışsın.*@
+                            @if (string.IsNullOrEmpty((string)ViewBag.ReError)==false)
+                            {
+                                <small style="color:red;">@ViewBag.ReError</small>
+
+                            }
+                            else
+                            {
+                                <small>Lütfen e-posta ve şifrenizi giriniz.</small>
+
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                <!-- card-body -->
+                <div class="card-body">
+                    @*Razorum üzerinden gerekli html nesnelerimi oluşturup modelim üzerinden databasimle erişimini sağladım.*@
+                    <div class="form-group">
+                        
+                        @Html.TextBoxFor(model => model.Member.Name, new { @class = "form-control", placeholder = "İsim", type = "text", required = "required" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBoxFor(model => model.Member.Surname, new { @class = "form-control", placeholder = "Soyisim", type = "text", required = "required" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBoxFor(model => model.Member.Email, new { @class = "form-control", placeholder = "E-posta", type = "email", required = "required" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBoxFor(model => model.Member.Password, new { @class = "form-control", placeholder = "password", type = "password", required = "required" })
+                    </div>
+                    @*Password kontrolü için modelimde rePassword adında bir property oluşturdum.*@
+                    <div class="form-group">
+                        @Html.TextBoxFor(model => model.rePassword, new { @class = "form-control", placeholder = "re-password", type = "password", required = "required" })
+                    </div>
+                </div>
+
+                <!-- card-footer -->
+                <div class="card-footer text-muted text-right">
+                    <a href="@Url.Action("Login","Account")" class="btn btn-info">
+                        <span class="fa fa-sign-in mr-1"></span>Giriş
+                    </a>
+                    <button class="btn btn-success" type="submit">
+                        <span class="fa fa-save mr-1"></span>Oluştur
+                    </button>
+                </div>
+            </div>
+        }
+
+
+    </div>
+</div>

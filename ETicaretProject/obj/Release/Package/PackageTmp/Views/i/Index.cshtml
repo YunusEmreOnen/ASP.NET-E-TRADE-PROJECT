@@ -1,0 +1,50 @@
+﻿@*View in içeresine kullanacağım modeli import ettim.*@
+@model ETicaretProject.Models.i.IndexModel
+@{
+    ViewBag.Title = "Index";
+    //Categories adında list oluşturdum.
+    List<ETicaretProject.DB.Categories> categories = new List<ETicaretProject.DB.Categories>();
+    //Eğer Category modelim null değilse listeme değerlerimi ekledim.
+    if (Model.Category != null)
+    {
+        categories.Add(Model.Category);
+        //Parent categorimi nesneme aktardım ve döngü ile parentcat null değer alana kadar listeme aktardım.
+        var parentcat = Model.Category.Categories2;
+        while (parentcat != null)
+        {
+            categories.Add(parentcat);
+            parentcat = parentcat.Categories2;
+        }
+    }
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav class="breadcrumb">
+            <a class="breadcrumb-item" href="@Url.Action("index","i",new { id=0 })">Anasayfa</a>
+            @*catogories nesnemei dönerek rooter yardımıyla id ye göre actionımı gerçekleştirdim.*@
+            @*/for ile listemi döndüm ve listemin son elemanını active class atadım.*@
+            @for (int i = categories.Count - 1; i >= 0; i--)
+            {
+                if (i == 0)
+                {
+                    <a class="breadcrumb-item active" href="@Url.Action("index","i",new {id=categories[i].Id})">@categories[i].Name</a>
+                }
+                else
+                {
+                    <a class="breadcrumb-item" href="@Url.Action("index","i",new {id=categories[i].Id})">@categories[i].Name</a>
+                }
+
+            }
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+
+    @foreach (var item in Model.Products)
+    {
+        @Html.Partial("ProductItem", item);
+    }
+
+</div>

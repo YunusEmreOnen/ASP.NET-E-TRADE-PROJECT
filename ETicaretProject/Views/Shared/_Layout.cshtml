@@ -1,0 +1,167 @@
+﻿@*Sessionımı kontrol etmmek için logonUser nesneme aktardım.*@
+@{
+    ETicaretProject.DB.Members logonUser = (ETicaretProject.DB.Members)Session["LogonUser"];
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - ETicaret</title>
+
+    <!-- CSS Styles -->
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Content/font-awesome.min.css">
+    <link rel="stylesheet" href="~/Content/Site.css">
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
+
+    <!-- JavaScripts -->
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/popper.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <!-- navbar start-->
+        <nav class="navbar navbar-dark nav navbar-expand-lg">
+            <a class="navbar-brand" href="@Url.Action("index","i")">
+                MyShopSite
+            </a>
+
+            <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse"
+                    data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false"
+                    aria-label="Menü">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="collapsibleNavId">
+                @*Partial viewime erişimi modelimi cast edip sağladım.*@
+                @Html.Partial("_MenuTopCategory", (List<ETicaretProject.DB.Categories>)ViewBag.MenuCategories)
+                <!-- Navbarımı elementlerini sağ tarafa yaslamama yarar -->
+                <ul class="navbar-nav navbar-right">
+                    @*logonuser nesnem null ise Kayıt ol ve giriş elementlerim gözükecek*@
+                    @if (logonUser == null)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="~/Account/Register">
+                                <span class="fa fa-user-plus mr-1"></span>Kayıt Ol
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="~/Account/Login">
+                                <span class="fa fa-sign-in mr-1"></span>Giriş
+                            </a>
+                        </li>
+                    }
+                    @*null değilse Kullanıcı adım ve gerekli elementler yüklenecek*@
+                    else
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="~/Account/Profil" id="ddlProfile" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                @* TODO: Giriş yapan kullanıcı adı yazılacak.*@
+                                <span class="fa fa-user mr-1"></span>@($"{logonUser.Name} {logonUser.Surname}")
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="ddlProfile">
+                                <a class="dropdown-item" href="~/Account/Profil">Profili Görüntüle</a>
+                                <a class="dropdown-item" href="~/i/Buy">Siparişlerim</a>
+                            </div>
+                        </li>
+                    }
+                    @* Bir liste oluşturdum ve Sessionımı listeme attım caste ederek attım. Listemin null olup olmadığını kontrol ettim, null ise listemi hata almamk için boş bir liste yaptım.  *@
+                    @{
+                        List<ETicaretProject.Models.i.BasketModels> basket = (List<ETicaretProject.Models.i.BasketModels>)Session["Basket"];
+                        if (basket == null)
+                        {
+                            basket = new List<ETicaretProject.Models.i.BasketModels>();
+                        }
+                    }
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="ddlCart" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <span class="fa fa-shopping-cart mr-1"></span>Sepetim
+
+                            <span class="badge badge-secondary badge-pill">@basket.Count</span>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="ddlCart">
+                            @*Model tipindeki listemi döndüm ve  varsa elemanlarını dropdownumun içerisine aktardım.*@
+                            @foreach (ETicaretProject.Models.i.BasketModels item in basket)
+                            {
+                                <a class="dropdown-item" href="~/i/Product/@item.Product.Id">@item.Product.Name (@item.Count)</a>
+                            }
+                            <div class="dropdown-divider"></div>
+                            <!--Ayraç -->
+                            <a class="dropdown-item" href="~/i/Basket">Sepetim</a>
+                        </div>
+                    </li>
+                    @*null değilse mesajlar ve çıkış linklerim görünecek gerekli elementler yüklenecek*@
+                    @if (logonUser != null)
+                    {
+                        //Dropdown listemde kaçtane eleman ekliyceğimi ve belirlemek için RenderMessage actionıma yönlendridim.
+                        @Html.Action("RenderMessage", "Message")
+                        
+
+                        <li class="nav-item">
+                            @*Account controlerımın Logout actionına yönlendirme yaptım.*@
+                            <a class="nav-link" href="~/Account/Logout">
+                                <span class="fa fa-sign-out mr-1"></span>Çıkış
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+            </div>
+        </nav>
+        <!-- navbar-end -->
+    </header>
+
+    <main>
+        <!-- content-start -->
+        <div class="container">
+            @*Sayfamın değişken olan kısmı bu kısım olduğundan Render metodumu burada çağırdım.*@
+            @RenderBody()
+        </div>
+        <!-- content-end -->
+    </main>
+
+    <footer>
+        <!-- footer-start -->
+        <div class="container-fluid text-center pt-5 pr-0 pl-0">
+
+            <div class="card card-default ftr">
+                <div class="card-body">
+                    <h5 class="card-title">MyShopSite</h5>
+                    <div>
+                        <a href="#" class="btn text-primary">
+                            <span class="fa fa-twitter fa-2x"></span>
+                        </a>
+                        <a href="#" class="btn text-danger">
+                            <span class="fa fa-instagram fa-2x"></span>
+                        </a>
+                        <a href="#" class="btn text-primary">
+                            <span class="fa fa-facebook fa-2x"></span>
+                        </a>
+                    </div>
+                    <a href="mailto:abc@mail.com" class="btn btn-dark btn-sm">
+                        <span class="fa fa-at mr-1">E-posta Gönder</span>
+                    </a>
+                </div>
+                <div class="card-footer">
+                    Disigned By Y.Emre Onen &copy; 2021
+                </div>
+            </div>
+        </div>
+        <!-- footer-end -->
+    </footer>
+
+
+</body>
+
+</html>

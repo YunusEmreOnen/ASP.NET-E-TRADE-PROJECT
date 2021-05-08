@@ -1,0 +1,23 @@
+﻿@model ETicaretProject.DB.Products
+
+@*Modelimden gelen resim verilerim boş ise girdiğim veriyi ata*@
+@{
+    if (string.IsNullOrEmpty(Model.ProductImageName))
+    {
+        Model.ProductImageName = "Content/img/300.png";
+    }
+
+}
+
+<div class="col-md-3 my-2">
+    <div class="card prd shadow">
+        <img class="card-img-top img-fluid" src="~/@Model.ProductImageName" style="max-height:300px" alt="">
+        <div class="card-body">
+            <h4 class="card-title"><a href="~/i/Product/@Model.Id" target="_blank">@Model.Name</a></h4>
+            @*<p class="card-text">120M</p>*@
+            <a href="~/i/AddBasket/@Model.Id" class="btn btn-success btn-sm pull-right">
+                <span class="fa fa-shopping-cart mr-2"> Sepete Ekle</span>
+            </a>
+        </div>
+    </div>
+</div>

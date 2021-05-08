@@ -1,0 +1,11 @@
+﻿@model ETicaretProject.Models.i.ProductModels
+@{
+    ViewBag.Title = "Product";
+}
+
+@*3 işte ayrı işler olduğundan partial view kullandım.*@
+
+@Html.Partial("_Product", Model.Product)
+@Html.Partial("_AddCart", Model.Product)
+@*Bu sayfamın modeli ile Partial sayfamda kullandığım model aynı olmadığından iki modeli bir biri ile ilişkilendirdim.*@
+@Html.Partial("_Comments",new ETicaretProject.Models.i.CommentModels() { Comments= Model.Comments,Product=Model.Product})

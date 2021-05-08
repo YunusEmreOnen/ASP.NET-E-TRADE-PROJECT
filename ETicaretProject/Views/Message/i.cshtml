@@ -1,0 +1,102 @@
+﻿@model ETicaretProject.Models.Message.iModels
+@{
+    ViewBag.Title = "Mesajlar";
+    //Oturumu açan kişiyi çektim.
+    var currentUser = (ETicaretProject.DB.Members)Session["LogonUser"];
+}
+
+<div class="row my-5">
+    <div class="col-md-12 ml-1 my-4">
+        <h2>Mesajlarım</h2>
+    </div>
+</div>
+
+
+<div class="table-responsive-sm">
+    <table class="table table-striped table-hover text-center">
+        <thead>
+            <tr>
+                <th scope="col">Tarih</th>
+                <th scope="col">Kimden</th>
+                <th scope="col">Konu</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Messages)
+            {
+                //Mesaj yanıtları arasında ilk mesaj atan kişiyi çektim.
+                var usr = item.MessageReplies.OrderBy(x => x.AddedDate).FirstOrDefault().Members;
+
+                <tr >
+                    <td>@item.AddedDate.ToShortDateString()</td>
+                    <td>@string.Format("{0} {1} {2}", usr.Name, usr.Surname, usr.MemberType.ToString())</td>
+                    <td>
+                        @item.Subject
+                    </td>
+                    <td>
+                        @* Mesaj okunduysa rengini info  yap okunmadıysa warning *@
+                        <a href="~/Message/MessageReplies/@item.Id" class="btn btn-@(item.IsRead?"info":"warning") btn-sm">
+                            <span class="fa fa-eye"></span>
+                        </a>
+                        @* Eğer mesaj atan ilk kişi Oturum açanla aynı ise Silme butonum gözüksün. *@
+                        @if (usr.Id == currentUser.Id)
+                        {
+                            <a href="~/Message/RemoveMessageReplies/@item.Id" class="btn btn-danger btn-sm">
+                                <span class="fa fa-trash"></span>
+                            </a>
+                        }
+
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <!-- Colspan Tabledaki hücreleri birleştirmeme yarar -->
+                <td colspan="4" class="text-right mt-4">
+                    <button class="btn btn-success mt-4" data-toggle="modal" data-target="#newMessageModal">
+                        <span class="fa fa-plus mr-2"></span>Yeni Mesaj
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+@* Modal ımı form içerisine aldım ve SendMessage actinıma yönlendirdim. *@
+@using (Html.BeginForm("SendMessage", "Message"))
+{
+    <div class="modal fade" id="newMessageModal" tabindex="-1" role="dialog"
+         aria-labelledby="newMessageModalTitleId" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content md">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Mesaj</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        @Html.DropDownList("ToUserId", Model.Users, new { @class = "form-control mt-3"  })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.TextBox("Subject", "", new { @class = "form-control mt-3", placeholder = "Konu", required = "required" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextArea("MessageBody", "", new { cols = "30", rows = "5", @class = "form-control", placeholder = "Mesajınızı Giriniz", required = "required" })
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">
+                        <span class="fa fa-close"></span> Kapat
+                    </button>
+                    <button type="submit" class="btn btn-success"><span class="fa fa-send"></span> Gönder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

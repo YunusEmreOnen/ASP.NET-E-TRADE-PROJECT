@@ -1,0 +1,98 @@
+﻿@model List<ETicaretProject.Models.i.BasketModels>
+@{
+    ViewBag.Title = "Sepet";
+}
+
+<div class="row my-5">
+    <div class="col-md-12 ml-1 my-4">
+        <h2>Sepetim</h2>
+        <hr />
+    </div>
+</div>
+
+
+<div class="table-responsive-md">
+    <small style="color:red;">@TempData["MyError"]</small>
+    @* Tablomu i controlır içerisindeki Buy actionına post ettim. *@
+    @using (Html.BeginForm("Buy", "i"))
+    {
+        <table class="table table-striped table-hover text-center">
+            <thead>
+                <tr>
+                    <th scope="col">Ürün Adı</th>
+                    <th scope="col">Ürün Miktarı</th>
+                    <th scope="col">Ürün Fiyatı</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @*Modelim içerisinde döndüm ve ürünlerimin değerlerini tablomun sütunlarına ekledim.*@
+                @foreach (ETicaretProject.Models.i.BasketModels item in Model)
+                {
+                    <tr>
+                        <td>@item.Product.Name</td>
+                        <td>@item.Count</td>
+                        <td>@item.Product.Price ₺</td>
+                        <td>
+                            @* linkimin item.Product.Id sini AddBasket actionıma göndererek ürünün countunu arttırdım. *@
+                            <a href="~/i/AddBasket/@item.Product.Id" class="btn btn-success btn-sm">
+                                <span class="fa fa-plus"></span>
+                            </a>
+                            <a href="~/i/AddBasket/@item.Product.Id?remove=true" class="btn btn-info btn-sm">
+                                <span class="fa fa-minus"></span>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-warning btn-sm" href="~/i/Product/@item.Product.Id" target="_blank">
+                                <span class="fa fa-eye"></span>
+                            </a>
+                            <a href="~/i/RemoveBasket/@item.Product.Id" class="btn btn-danger btn-sm ">
+                                <span class="fa fa-trash"></span>
+                            </a>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+            <tfoot>
+                @if (ViewBag.CurrentAddresses != null && ((List<SelectListItem>)ViewBag.CurrentAddresses) != null)
+                {
+                    <tr>
+                        <td colspan="2">
+                            @Html.Label("AddressId", "Adres Seçiniz:")
+                        </td>
+                        <td colspan="4">
+                            @Html.DropDownList("Address", (List<SelectListItem>)ViewBag.CurrentAddresses, new { @class = "form-control" })
+                        </td>
+
+                    </tr>
+                }
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center">
+                        <h4>@ViewBag.TotalPrice ₺</h4>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+
+        <div class="col-md-12 text-right">
+            <a href="~/i/RemoveBasket/0" class="btn btn-danger mr-2">
+                <span class="fa fa-trash mr-4"></span>Sepeti Boşalt
+            </a>
+            <button type="submit" class="btn btn-success">
+                <span class="fa fa-send mr-2"></span>Satın Al
+            </button>
+        </div>
+
+    }
+
+</div>
+
+
+

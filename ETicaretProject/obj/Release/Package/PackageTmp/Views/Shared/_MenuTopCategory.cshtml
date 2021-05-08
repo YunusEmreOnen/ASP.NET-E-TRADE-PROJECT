@@ -1,0 +1,22 @@
+﻿@model List<ETicaretProject.DB.Categories>
+
+<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+    @*Modelimi dönüp eğer categorilerinde childe içeriyorsa yada içermiyorsa ona göre  eklelemlerimi yaptım.*@
+    @foreach (var cat in Model)
+    {
+        if (cat.Categories1.Any())
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle"  data-toggle="dropdown" href="@Url.Action("index","i",new {id=cat.Id})" aria-haspopup="true" aria-expanded="false">@cat.Name</a>
+                @*Metodumda child eklememe rağmen hala alt katogoriler içerebileceği için Recursive bir metod kullanmak istedim bunuda helper sayesinde yaptım.*@
+                @_MenuHelper.MenuRecursive(cat.Categories1.ToList())
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("index","i",new {id=cat.Id})">@cat.Name</a>
+            </li>
+        }
+    }
+</ul>
